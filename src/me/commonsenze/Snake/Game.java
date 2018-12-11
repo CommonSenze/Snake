@@ -3,14 +3,16 @@ package me.commonsenze.Snake;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import me.commonsenze.Snake.Objects.Snake;
 import me.commonsenze.Snake.Util.Renderable;
 
 public class Game {
 
 	private ArrayList<Renderable> renderables = new ArrayList<>(), remove = new ArrayList<>();
+	private Snake snake;
 
 	public Game() {
-//		spawnCheckers();
+		this.snake = new Snake();
 	}
 
 	public void render(Graphics g) {
