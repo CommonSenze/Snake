@@ -3,11 +3,15 @@ package me.commonsenze.Snake.Util;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import me.commonsenze.Platformer.Main;
+import me.commonsenze.Snake.Game;
+import me.commonsenze.Snake.Main;
 
 public class UserKeyInput extends KeyAdapter {
 
-	public UserKeyInput() {
+	private Game game;
+	
+	public UserKeyInput(Game game) {
+		this.game = game;
 	}
 
 	@Override
@@ -15,7 +19,7 @@ public class UserKeyInput extends KeyAdapter {
 		int key = e.getKeyCode();
 		
 		if (key == KeyEvent.VK_W) {
-			Main.CAMERA.setYSpeed(-5);
+			game.getHead().setDirection(-5);
 		}
 		if (key == KeyEvent.VK_A) {
 			Main.CAMERA.setXSpeed(-5);

@@ -12,7 +12,8 @@ public class Game {
 	private Snake snake;
 
 	public Game() {
-		this.snake = new Snake();
+		this.snake = new Snake(Main.FIELD_SIZE*7,Main.FIELD_SIZE*7);
+		renderables.add(snake);
 	}
 
 	public void render(Graphics g) {
@@ -37,28 +38,7 @@ public class Game {
 		remove.add(renderable);
 	}
 	
-//	private void spawnCheckers() {
-//		int slot = 0;
-//		for (Rectangle rectangle : field.getRectangles()) {
-//			if (slot == 12)break;
-//			int x = 10+rectangle.x;
-//			int y = 10+rectangle.y;
-//			Pieve checker = new Checker(x, y, Team.BLACK, rectangle, field, this);
-//			field.getCovered().put(field.getGrids().get(rectangle), checker);
-//			this.renderables.add(checker);
-//			slot++;
-//		}
-//		slot = 0;
-//		ArrayList<Rectangle> otherSide = field.getRectangles();
-//		Collections.reverse(otherSide);
-//		for (Rectangle rectangle : otherSide) {
-//			if (slot == 12)break;
-//			int x = 10+rectangle.x;
-//			int y = 10+rectangle.y;
-//			Checker checker = new Checker(x, y, Team.RED, rectangle, field, this);
-//			field.getCovered().put(field.getGrids().get(rectangle), checker);
-//			this.renderables.add(checker);
-//			slot++;
-//		}
-//	}
+	public Snake getHead() {
+		return snake;
+	}
 }

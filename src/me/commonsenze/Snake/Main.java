@@ -80,11 +80,7 @@ public class Main extends Canvas implements Runnable {
 		
 		g.setColor(Color.WHITE);
 		
-		for (int x = 0; x <32; x++) {
-			for (int y = 0; y < 32; y++) {
-				g.drawRect(x*FIELD_SIZE, y*FIELD_SIZE, FIELD_SIZE, FIELD_SIZE);
-			}
-		}
+		
 
 		g.dispose();
 		bs.show();

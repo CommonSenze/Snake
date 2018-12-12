@@ -11,11 +11,15 @@ import me.commonsenze.Snake.Util.Renderable;
 public class Snake implements Renderable {
 
 	private int x, y, movementTimer;
+	private int[] coords;
 	private Rectangle head;
 	private Direction currentDirection;
 
 	public Snake(int x, int y) {
 		this.head = new Rectangle(x, y, Main.FIELD_SIZE, Main.FIELD_SIZE);
+		this.coords = new int[2];
+		this.coords[0] = x/Main.FIELD_SIZE;
+		this.coords[1] = y/Main.FIELD_SIZE;
 		currentDirection = Direction.NORTH;
 	}
 
@@ -36,19 +40,24 @@ public class Snake implements Renderable {
 		switch(currentDirection) {
 		case NORTH:
 			y -= Main.FIELD_SIZE;
+			coords[1]--;
 			break;
 		case SOUTH:
-			y -= Main.FIELD_SIZE;
+			y += Main.FIELD_SIZE;
+			coords[1]++;
 			break;
 		case EAST:
 			x += Main.FIELD_SIZE;
+			coords[0]++;
 			break;
 		case WEST:
 			x -= Main.FIELD_SIZE;
+			coords[0]--;
 			break;
 		default:
 			break;
 		}
+		
 	}
 
 	/**
@@ -87,6 +96,10 @@ public class Snake implements Renderable {
 	 */
 	public void rebuild() {
 		getHead().setLocation(getX(), getY());
+	}
+	
+	public int[] getCoords() {
+		return coords;
 	}
 
 	public Rectangle getHead() {
