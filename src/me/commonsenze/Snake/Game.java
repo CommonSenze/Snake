@@ -10,6 +10,7 @@ public class Game {
 
 	private ArrayList<Renderable> renderables = new ArrayList<>(), remove = new ArrayList<>();
 	private Snake snake;
+	public static boolean STARTED = false;
 
 	public Game() {
 		this.snake = new Snake(Main.FIELD_SIZE*7,Main.FIELD_SIZE*7);
@@ -24,6 +25,7 @@ public class Game {
 	}
 	
 	public void tick() {
+		if (!STARTED)return;
 		for (Renderable renderable : renderables) {
 			renderable.tick();
 		}

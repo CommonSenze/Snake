@@ -4,7 +4,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import me.commonsenze.Snake.Game;
-import me.commonsenze.Snake.Main;
 
 public class UserKeyInput extends KeyAdapter {
 
@@ -15,20 +14,29 @@ public class UserKeyInput extends KeyAdapter {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		
+		if (!Game.STARTED)Game.STARTED = true;
+		if (!game.getHead().hasMoved()) return;
 		if (key == KeyEvent.VK_W) {
-			game.getHead().setDirection(-5);
+			if (game.getHead().getDirection() == Direction.SOUTH)return;
+			game.getHead().setDirection(Direction.NORTH);
+			game.getHead().setMoved(false);
 		}
 		if (key == KeyEvent.VK_A) {
-			Main.CAMERA.setXSpeed(-5);
+			if (game.getHead().getDirection() == Direction.EAST)return;
+			game.getHead().setDirection(Direction.WEST);
+			game.getHead().setMoved(false);
 		}
 		if (key == KeyEvent.VK_D) {
-			Main.CAMERA.setXSpeed(5);
+			if (game.getHead().getDirection() == Direction.WEST)return;
+			game.getHead().setDirection(Direction.EAST);
+			game.getHead().setMoved(false);
 		}
 		if (key == KeyEvent.VK_S) {
-			Main.CAMERA.setYSpeed(5);
+			if (game.getHead().getDirection() == Direction.NORTH)return;
+			game.getHead().setDirection(Direction.SOUTH);
+			game.getHead().setMoved(false);
 		}
 	}
 }
