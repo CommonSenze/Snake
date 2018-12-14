@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Random;
 
 import me.commonsenze.Snake.Main;
+import me.commonsenze.Snake.Scenes.Game;
 import me.commonsenze.Snake.Util.Direction;
 import me.commonsenze.Snake.Util.Renderable;
 
@@ -18,11 +18,10 @@ public class Snake implements Renderable {
 	private Direction currentDirection;
 	private int length;
 	private ArrayList<Body> bodies;
-	private ArrayList<Integer[]> snakeSlots;
-	private Food food;
 	private boolean moved;
+	private Game game;
 
-	public Snake(int x, int y) {
+	public Snake(int x, int y, Game game) {
 		this.head = new Rectangle(x, y, Main.FIELD_SIZE, Main.FIELD_SIZE);
 		this.coords = new Integer[2];
 		this.x = x;
@@ -31,9 +30,8 @@ public class Snake implements Renderable {
 		this.coords[1] = y/Main.FIELD_SIZE;
 		currentDirection = Direction.NORTH;
 		this.bodies = new ArrayList<>();
-		this.snakeSlots = new ArrayList<>();
+		this.game = game;
 		this.length = 0;
-		spawnFood();
 	}
 
 	public void tick() {
@@ -50,10 +48,7 @@ public class Snake implements Renderable {
 		for (Body body : bodies) {
 			body.render(g);
 		}
-		if (food != null) {
-			food.render(g);
-		}
-		g.setColor(Color.RED);
+		g.setColor(Color.WHITE);
 		g.fillRect(head.x, head.y, head.width, head.height);
 	}
 
@@ -75,7 +70,7 @@ public class Snake implements Renderable {
 			break;
 		}
 	}
-	
+
 	private void checkGrid() {
 		ArrayList<Body> prevBodies = new ArrayList<>(bodies);
 		for (Body body : prevBodies) {
@@ -84,14 +79,12 @@ public class Snake implements Renderable {
 			}
 		}
 		int prevX = coords[0]*Main.FIELD_SIZE, prevY = coords[1]*Main.FIELD_SIZE;
-		
+
 		reloadLocation();
 
-		if (food != null) {
-			if (food.inGrid(coords)) {
-				length++;
-				spawnFood();
-			}
+		if (game.inFoodGrid(coords)) {
+			length++;
+			game.spawnFood(coords);
 		}
 		if (length >= 1) {
 			bodies.add(new Body(prevX,prevY, this));
@@ -100,34 +93,21 @@ public class Snake implements Renderable {
 			body.incrementMovement();
 		}
 	}
-	
-	private void spawnFood() {
-		Random random = new Random();
-		int x = random.nextInt(Main.GRID_SLOTS);
-		int y = random.nextInt(Main.GRID_SLOTS);
-		
-		Integer[] slot = {x,y};
-		while (snakeSlots.contains(slot)) {
-			slot[0] = random.nextInt(Main.GRID_SLOTS);
-			slot[1] = random.nextInt(Main.GRID_SLOTS);
-		}
-		
-		System.out.println(snakeSlots.size());
-		
-		food = new Food(x*Main.FIELD_SIZE, y*Main.FIELD_SIZE);
-	}
-	
+
 	public void setMoved(boolean moved) {
 		this.moved = moved;
 	}
-	
+
 	public boolean hasMoved() {
 		return moved;
 	}
-	
-//	private boolean inGrid(Integer[] coords) {
-//		return coords[0] == this.coords[0] && this.coords[1] == coords[1];
-//	}
+
+	public boolean inGrid(Integer[] coords) {
+		for (Body body : bodies) {
+			if(body.inGrid(coords))return true;
+		}
+		return coords[0] == this.coords[0] && this.coords[1] == coords[1];
+	}
 
 	/**
 	 * This method sets the x of the object, independent of the character that is rendered.
@@ -166,14 +146,12 @@ public class Snake implements Renderable {
 	public void rebuild() {
 		getHead().setLocation(getX(), getY());
 	}
-	
+
 	public void reloadLocation() {
 		this.coords[0] = x/Main.FIELD_SIZE;
 		this.coords[1] = y/Main.FIELD_SIZE;
-		
-		snakeSlots.add(coords);
 	}
-	
+
 	public Integer[] getCoords() {
 		return coords;
 	}
@@ -181,30 +159,20 @@ public class Snake implements Renderable {
 	public Rectangle getHead() {
 		return head;
 	}
-	
+
 	public Direction getDirection() {
 		return currentDirection;
 	}
-	
+
 	public void setDirection(Direction direction) {
 		currentDirection = direction;
 	}
-	
+
 	public int getLength() {
 		return length;
 	}
-	
+
 	public void removeBody(Body body) {
-		bodies.remove(body);
-		
-	}
-	
-	public void removeSlot(int x, int y) {
-		Integer[] arra
-		for (Integer[] array : snakeSlots) {
-			if (array[0] == x && array[1] == y) {
-				\
-			}
-		}
+		bodies.remove(body);	
 	}
 }
