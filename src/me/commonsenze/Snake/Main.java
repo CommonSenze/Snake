@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
+import me.commonsenze.Snake.Scenes.Game;
+import me.commonsenze.Snake.Scenes.Enum.Scene;
 import me.commonsenze.Snake.Util.UserKeyInput;
 import me.commonsenze.Snake.Util.UserMouseInput;
 import me.commonsenze.Snake.Util.Window;
@@ -19,15 +21,15 @@ public class Main extends Canvas implements Runnable {
 	public static final int FIELD_SIZE = 25;
 	public static final int GRID_SLOTS = 32;
 	public static final int WIDTH = (int)(FIELD_SIZE * 32+(FIELD_SIZE-19)), HEIGHT = (int)(FIELD_SIZE * 32+(FIELD_SIZE+4));
-	private Game game;
+	private Scene scene;
 	private UserMouseInput mouseInput;
 	private Thread thread;
 	private boolean running = false;
 	
 	public Main() {
-		this.game = new Game();
+		this.scene = Scene.GAME_OVER;
 		new Window(WIDTH, HEIGHT, "Testing", this);
-		this.addKeyListener(new UserKeyInput(game));
+		this.addKeyListener(new UserKeyInput((Game)Scene.GAME.getScene()));
 		this.addMouseListener(mouseInput = new UserMouseInput());
 	}
 	
@@ -83,16 +85,17 @@ public class Main extends Canvas implements Runnable {
 		
 		g.setColor(Color.WHITE);
 		
-		game.render(g);
-		Field.render(g);
-
-		mouseInput.render(g);
+		scene.getScene().render(g);
+		
+		if (scene == Scene.GAME) {
+			mouseInput.render(g);
+		}
 		
 		g.dispose();
 		bs.show();
 	}
 	
 	private void tick() {
-		game.tick();
+		scene.getScene().tick();
 	}
 }

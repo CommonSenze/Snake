@@ -31,7 +31,7 @@ public class Body implements Renderable {
 
 	@Override
 	public void render(Graphics g) {
-		g.setColor(Color.BLUE);
+		g.setColor(new Color(150,150,150));
 		g.fillRect(body.x, body.y, body.width, body.height);
 	}
 	
