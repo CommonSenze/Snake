@@ -3,12 +3,12 @@ package me.commonsenze.Snake.Util;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import me.commonsenze.Snake.Scenes.Game;
+import me.commonsenze.Snake.Game;
 
 public class UserKeyInput extends KeyAdapter {
 
 	private Game game;
-
+	
 	public UserKeyInput(Game game) {
 		this.game = game;
 	}
@@ -17,49 +17,26 @@ public class UserKeyInput extends KeyAdapter {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		if (!Game.STARTED)Game.STARTED = true;
-		if (game.getPlayerOne().hasMoved()) {
-			if (key == KeyEvent.VK_W) {
-				if (game.getPlayerOne().getDirection() == Direction.SOUTH)return;
-				game.getPlayerOne().setDirection(Direction.NORTH);
-				game.getPlayerOne().setMoved(false);
-			}
-			if (key == KeyEvent.VK_A) {
-				if (game.getPlayerOne().getDirection() == Direction.EAST)return;
-				game.getPlayerOne().setDirection(Direction.WEST);
-				game.getPlayerOne().setMoved(false);
-			}
-			if (key == KeyEvent.VK_D) {
-				if (game.getPlayerOne().getDirection() == Direction.WEST)return;
-				game.getPlayerOne().setDirection(Direction.EAST);
-				game.getPlayerOne().setMoved(false);
-			}
-			if (key == KeyEvent.VK_S) {
-				if (game.getPlayerOne().getDirection() == Direction.NORTH)return;
-				game.getPlayerOne().setDirection(Direction.SOUTH);
-				game.getPlayerOne().setMoved(false);
-			}
+		if (!game.getHead().hasMoved()) return;
+		if (key == KeyEvent.VK_W) {
+			if (game.getHead().getDirection() == Direction.SOUTH)return;
+			game.getHead().setDirection(Direction.NORTH);
+			game.getHead().setMoved(false);
 		}
-		if (game.getPlayerTwo().hasMoved()) {
-			if (key == KeyEvent.VK_UP) {
-				if (game.getPlayerTwo().getDirection() == Direction.SOUTH)return;
-				game.getPlayerTwo().setDirection(Direction.NORTH);
-				game.getPlayerTwo().setMoved(false);
-			}
-			if (key == KeyEvent.VK_LEFT) {
-				if (game.getPlayerTwo().getDirection() == Direction.EAST)return;
-				game.getPlayerTwo().setDirection(Direction.WEST);
-				game.getPlayerTwo().setMoved(false);
-			}
-			if (key == KeyEvent.VK_RIGHT) {
-				if (game.getPlayerTwo().getDirection() == Direction.WEST)return;
-				game.getPlayerTwo().setDirection(Direction.EAST);
-				game.getPlayerTwo().setMoved(false);
-			}
-			if (key == KeyEvent.VK_DOWN) {
-				if (game.getPlayerTwo().getDirection() == Direction.NORTH)return;
-				game.getPlayerTwo().setDirection(Direction.SOUTH);
-				game.getPlayerTwo().setMoved(false);
-			}
+		if (key == KeyEvent.VK_A) {
+			if (game.getHead().getDirection() == Direction.EAST)return;
+			game.getHead().setDirection(Direction.WEST);
+			game.getHead().setMoved(false);
+		}
+		if (key == KeyEvent.VK_D) {
+			if (game.getHead().getDirection() == Direction.WEST)return;
+			game.getHead().setDirection(Direction.EAST);
+			game.getHead().setMoved(false);
+		}
+		if (key == KeyEvent.VK_S) {
+			if (game.getHead().getDirection() == Direction.NORTH)return;
+			game.getHead().setDirection(Direction.SOUTH);
+			game.getHead().setMoved(false);
 		}
 	}
 }

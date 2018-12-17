@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
-import me.commonsenze.Snake.Scenes.Game;
 import me.commonsenze.Snake.Util.UserKeyInput;
 import me.commonsenze.Snake.Util.UserMouseInput;
 import me.commonsenze.Snake.Util.Window;

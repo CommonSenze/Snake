@@ -6,8 +6,8 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import me.commonsenze.Snake.Game;
 import me.commonsenze.Snake.Main;
-import me.commonsenze.Snake.Scenes.Game;
 
 public class UserMouseInput  extends MouseAdapter {
 
