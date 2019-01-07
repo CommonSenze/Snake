@@ -31,4 +31,10 @@ public class Food implements Renderable {
 	public boolean inGrid(Integer[] coords) {
 		return coords[0] == this.coords[0] && this.coords[1] == coords[1];
 	}
+	
+	public static void main(String[] args) {
+		String message = "\t\tHello:";
+		
+		System.out.println(message.trim().replace(":", ""));
+	}
 }

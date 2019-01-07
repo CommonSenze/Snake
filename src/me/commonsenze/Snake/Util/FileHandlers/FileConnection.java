@@ -14,6 +14,7 @@ import java.util.HashMap;
 public class FileConnection {
 
 	private File file;
+	private HashMap<String, Object> data;
 
 	public FileConnection(String name) {
 		this.file = new File(name+".txt");
@@ -24,6 +25,60 @@ public class FileConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		this.data = new HashMap<>();
+		initiate();
+	}
+	
+	private void initiate() {
+		try {
+			FileReader reader = new FileReader(file);
+			BufferedReader br = new BufferedReader(reader);
+			try {
+				String line, key = "";
+				while ((line = br.readLine()) != null) {
+					if (!line.contains(": ")) {
+						key += line.trim().replace(":", "") + ".";
+						continue;
+					}
+					data.put(key+line.trim().split(": ")[0], (Object)line.trim().split(": ")[1]);
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private void save() {
+		for (String key : data.keySet()) {
+			int indexes = 0, inputs = key.split(".").length, slot = 0;
+			for (String subKey : key.split(".")) {
+				String input = "";
+				for (int i = 0; i < indexes; i++) {
+					input += "\t";
+				}
+				if (inputs -1 == slot) {
+					input += subKey;
+					try {
+						Files.write(Paths.get(file.getAbsolutePath()), (input+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
+					} catch (IOException e) {
+					    //exception handling left as an exercise for the reader
+					}
+				} else {
+					try {
+						Files.write(Paths.get(file.getAbsolutePath()), (input+subKey + ":").getBytes(), StandardOpenOption.APPEND);
+					} catch (IOException e) {
+					    //exception handling left as an exercise for the reader
+					}
+				}
+				
+				slot++;
+			}
+		}
 	}
 	
 	public void set(String key, String value) throws IOException {
