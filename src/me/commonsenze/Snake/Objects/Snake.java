@@ -180,6 +180,4 @@ public class Snake implements Renderable {
 	public void removeBody(Body body) {
 		bodies.remove(body);
 	}
-	
-	public boolean 
 }
