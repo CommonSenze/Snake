@@ -4,10 +4,8 @@ Aidan:
 			Priyam: 5000
 Arena:
 	Max:
-		Z: 20
-Arena:
-	Max:
+		X: 20
 		Y: 20
-Arena:
-	Max:
+		Z: 20
+	Min:
 		X: 20

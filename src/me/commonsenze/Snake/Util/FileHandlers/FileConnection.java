@@ -11,11 +11,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class FileConnection {
 
 	private File file;
-	private HashMap<String, Object> data;
+	private Map<String, Object> data;
 
 	public FileConnection(String name) {
 		this.file = new File(name+".txt");
@@ -26,7 +28,7 @@ public class FileConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		this.data = new HashMap<>();
+		this.data = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		initiate();
 	}
 
@@ -63,8 +65,9 @@ public class FileConnection {
 		connection.set("Arena.Max.X", 20);
 		connection.set("Arena.Max.Y", 20);
 		connection.set("Arena.Max.Z", 20);
+		connection.set("Arena.Min.X", 20);
 		connection.set("Aidan.Testing.Amari.Priyam", 5000);
-
+		
 		System.out.println("Saving data...");
 		connection.save();
 
@@ -78,14 +81,16 @@ public class FileConnection {
 	}
 
 	public void save() {
+		String folder = "";
 		for (String key : data.keySet()) {
 			if (contains(key)) {
 				overwrite(key);
 			} else {
-				String currentKeyString = "";
-				int indents = 0, inputs = key.split("\\.").length;
+				while (!key.contains(folder)&&!folder.isEmpty())
+					folder = folder.substring(0, folder.length()-2);
+				int indents = getInstancesOf(folder, '.'), inputs = key.split("\\.").length;
 				for (String subKey : key.split("\\.")) {
-					if (currentKeyString + subKey )
+					if (folder.contains(subKey))continue;
 					try {
 						String tab = "";
 						FileReader reader = new FileReader(file);
@@ -105,10 +110,10 @@ public class FileConnection {
 							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
 						} else {
 							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ":").getBytes(), StandardOpenOption.APPEND);
+							folder+=subKey + ".";
 						}
 
 						indents++;
-						currentKeyString+=subKey + ".";
 					} catch (IOException e) {
 						//exception handling left as an exercise for the reader
 						e.printStackTrace();
@@ -116,6 +121,17 @@ public class FileConnection {
 				}
 			}
 		}
+	}
+	
+	public int getInstancesOf(String str, char c) {
+	    int count = 0;
+
+	    for(int i = 0; i < str.length(); i++) {
+	    	if(str.charAt(i) == c)
+	            count++;
+	    }
+
+	    return count;
 	}
 
 	private void overwrite(String key) {
@@ -181,37 +197,13 @@ public class FileConnection {
 		}
 		return false;
 	}
-	
-	public boolean containsSub(String subKey) {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				String line, dataKey = "";
-				while ((line = br.readLine()) != null) {
-					if (line.contains(": ")) {
-						dataKey = "";
-						continue;
-					}
-					if ((dataKey+line.trim().replace(":", "")).equalsIgnoreCase(subKey)) {
-						br.close();
-						return true;
-					}
-					dataKey += line.trim().replace(":", "") + ".";
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return false;
-	}
 
 	public void set(String key, Object value) {
+		for (String otherKey : data.keySet()) {
+			if (otherKey.contains(key)) {
+				
+			}
+		}
 		data.put(key, value);
 	}
 
