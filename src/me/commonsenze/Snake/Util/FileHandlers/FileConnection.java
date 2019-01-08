@@ -3,6 +3,7 @@ package me.commonsenze.Snake.Util.FileHandlers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class FileConnection {
 		this.data = new HashMap<>();
 		initiate();
 	}
-	
+
 	private void initiate() {
 		try {
 			FileReader reader = new FileReader(file);
@@ -40,7 +41,8 @@ public class FileConnection {
 						key += line.trim().replace(":", "") + ".";
 						continue;
 					}
-					data.put(key+line.trim().split(": ")[0], (Object)line.trim().split(": ")[1]);
+					set(key+line.trim().split(": ")[0], (Object)line.trim().split(": ")[1]);
+					key = "";
 				}
 				br.close();
 			} catch (IOException e) {
@@ -50,155 +52,202 @@ public class FileConnection {
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-	}
-	
-	private void save() {
-		for (String key : data.keySet()) {
-			int indexes = 0, inputs = key.split(".").length, slot = 0;
-			for (String subKey : key.split(".")) {
-				String input = "";
-				for (int i = 0; i < indexes; i++) {
-					input += "\t";
-				}
-				if (inputs -1 == slot) {
-					input += subKey;
-					try {
-						Files.write(Paths.get(file.getAbsolutePath()), (input+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
-					} catch (IOException e) {
-					    //exception handling left as an exercise for the reader
-					}
-				} else {
-					try {
-						Files.write(Paths.get(file.getAbsolutePath()), (input+subKey + ":").getBytes(), StandardOpenOption.APPEND);
-					} catch (IOException e) {
-					    //exception handling left as an exercise for the reader
-					}
-				}
-				
-				slot++;
-			}
-		}
-	}
-	
-	public void set(String key, String value) throws IOException {
-		boolean empty = true;
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				if (br.readLine() != null) {
-					empty = false;
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-		    Files.write(Paths.get(file.getAbsolutePath()), ((empty ? "" : "\n")+key + ": " +value).getBytes(), StandardOpenOption.APPEND);
-		} catch (IOException e) {
-		    //exception handling left as an exercise for the reader
 		}
 	}
 
+	public static void main(String[] args) {
+		System.out.println("Creating Test file...");
+		FileConnection connection = new FileConnection("Test");
+		System.out.println("Setting data values...");
+		
+		connection.set("Arena.Max.X", 20);
+		connection.set("Arena.Max.Y", 20);
+		connection.set("Arena.Max.Z", 20);
+		connection.set("Aidan.Testing.Amari.Priyam", 5000);
+
+		System.out.println("Saving data...");
+		connection.save();
+
+		System.out.println("Showing data...");
+		try {
+			System.out.println(connection.getInt("Aidan.Testing.Amari.Priyam"));
+		} catch (IllegalKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void save() {
+		for (String key : data.keySet()) {
+			if (contains(key)) {
+				overwrite(key);
+			} else {
+				String currentKeyString = "";
+				int indents = 0, inputs = key.split("\\.").length;
+				for (String subKey : key.split("\\.")) {
+					if (currentKeyString + subKey )
+					try {
+						String tab = "";
+						FileReader reader = new FileReader(file);
+						BufferedReader br = new BufferedReader(reader);
+						
+						if (br.readLine() != null) {
+							tab = "\n";
+						}
+						
+						br.close();
+						
+						for (int i = 0; i < indents; i++) {
+							tab += "\t";
+						}
+						
+						if (inputs -1 == indents) {
+							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
+						} else {
+							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ":").getBytes(), StandardOpenOption.APPEND);
+						}
+
+						indents++;
+						currentKeyString+=subKey + ".";
+					} catch (IOException e) {
+						//exception handling left as an exercise for the reader
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void overwrite(String key) {
+		try {
+			FileReader reader = new FileReader(file);
+			BufferedReader br = new BufferedReader(reader);
+			try {
+				String line, dataKey = "", input = "";
+				while ((line = br.readLine()) != null) {
+					if (line.contains(": ")) {
+						dataKey += line.trim().split(":")[0];
+						if (dataKey.equalsIgnoreCase(key)) {
+							line = line.replace(line.split(": ")[1], data.get(key).toString());
+						}
+						dataKey = "";
+						input += line+"\n";
+						continue;
+					}
+					dataKey += line.trim().replace(":", "") + ".";
+					input += line+"\n";
+				}
+				input = input.substring(0,input.length()-1);
+				FileOutputStream out = new FileOutputStream(file);
+				out.write(input.getBytes());
+				out.close();
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	public boolean contains(String key) {
+		try {
+			FileReader reader = new FileReader(file);
+			BufferedReader br = new BufferedReader(reader);
+			try {
+				String line, dataKey = "";
+				while ((line = br.readLine()) != null) {
+					if (line.contains(": ")) {
+						dataKey += line.trim().split(":")[0];
+						if (dataKey.equalsIgnoreCase(key)) {
+							br.close();
+							return true;
+						}
+						dataKey = "";
+						continue;
+					}
+					dataKey += line.trim().replace(":", "") + ".";
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean containsSub(String subKey) {
+		try {
+			FileReader reader = new FileReader(file);
+			BufferedReader br = new BufferedReader(reader);
+			try {
+				String line, dataKey = "";
+				while ((line = br.readLine()) != null) {
+					if (line.contains(": ")) {
+						dataKey = "";
+						continue;
+					}
+					if ((dataKey+line.trim().replace(":", "")).equalsIgnoreCase(subKey)) {
+						br.close();
+						return true;
+					}
+					dataKey += line.trim().replace(":", "") + ".";
+				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return false;
+	}
+
+	public void set(String key, Object value) {
+		data.put(key, value);
+	}
+
 	public Object getObject(String key) throws IllegalKeyException {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (line.contains(key)) {
-						br.close();
-						return (Object) line.split(": ")[1];
-					}
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		if (data.containsKey(key))return data.get(key);
 		throw new IllegalKeyException();
 	}
-	
+
 	public int getInt(String key) throws NumberFormatException, IllegalKeyException {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
+		if (data.containsKey(key)) {
+			int num = 0;
 			try {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (line.contains(key)) {
-						br.close();
-						return Integer.parseInt(line.split(": ")[1]);
-					}
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				num = Integer.parseInt(data.get(key).toString());
+			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			return num;
 		}
 		throw new IllegalKeyException();
 	}
-	
+
 	public double getDouble(String key) throws NumberFormatException, IllegalKeyException {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
+		if (data.containsKey(key)) {
+			double num = 0;
 			try {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (line.contains(key)) {
-						br.close();
-						return Double.parseDouble(line.split(": ")[1]);
-					}
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				num = Double.parseDouble(data.get(key).toString());
+			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			return num;
 		}
 		throw new IllegalKeyException();
 	}
-	
+
 	public String getString(String key) throws IllegalKeyException {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (line.contains(key)) {
-						br.close();
-						return line.split(": ")[1];
-					}
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		if (data.containsKey(key))return data.get(key).toString();
 		throw new IllegalKeyException();
 	}
 
