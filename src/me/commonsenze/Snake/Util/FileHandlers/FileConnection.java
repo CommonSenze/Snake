@@ -40,11 +40,19 @@ public class FileConnection {
 				String line, key = "";
 				while ((line = br.readLine()) != null) {
 					if (!line.contains(": ")) {
+						int indents = getInstancesOf(key, '.'), tabs = getInstancesOf(line, '\t');
+						if (indents != tabs) {
+							key = key.substring(0,key.length()-2);
+							int index = key.lastIndexOf('.')+1;
+							if (index == -1) index = 0;
+							key = key.substring(0,index);
+							System.out.println(key);
+						}
 						key += line.trim().replace(":", "") + ".";
 						continue;
 					}
+//					System.out.println(key+line.trim().split(": ")[0]);
 					set(key+line.trim().split(": ")[0], (Object)line.trim().split(": ")[1]);
-					key = "";
 				}
 				br.close();
 			} catch (IOException e) {
@@ -58,113 +66,94 @@ public class FileConnection {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Creating Test file...");
+//		System.out.println("Creating Test file...");
 		FileConnection connection = new FileConnection("Test");
-		System.out.println("Setting data values...");
-		
+//		System.out.println("Setting data values...");
+
 		connection.set("Arena.Max.X", 20);
 		connection.set("Arena.Max.Y", 20);
 		connection.set("Arena.Max.Z", 20);
-		connection.set("Arena.Min.X", 20);
 		connection.set("Aidan.Testing.Amari.Priyam", 5000);
-		
-		System.out.println("Saving data...");
+
+//		System.out.println("Saving data...");
 		connection.save();
 
-		System.out.println("Showing data...");
-		try {
-			System.out.println(connection.getInt("Aidan.Testing.Amari.Priyam"));
-		} catch (IllegalKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		System.out.println("Showing data...");
+//		try {
+//			System.out.println(connection.getInt("Aidan.Testing.Amari.Priyam"));
+//		} catch (IllegalKeyException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	public void save() {
+		clear();
 		String folder = "";
 		for (String key : data.keySet()) {
-			if (contains(key)) {
-				overwrite(key);
-			} else {
-				while (!key.contains(folder)&&!folder.isEmpty())
-					folder = folder.substring(0, folder.length()-2);
-				int indents = getInstancesOf(folder, '.'), inputs = key.split("\\.").length;
-				for (String subKey : key.split("\\.")) {
-					if (folder.contains(subKey))continue;
-					try {
-						String tab = "";
-						FileReader reader = new FileReader(file);
-						BufferedReader br = new BufferedReader(reader);
-						
-						if (br.readLine() != null) {
-							tab = "\n";
-						}
-						
-						br.close();
-						
-						for (int i = 0; i < indents; i++) {
-							tab += "\t";
-						}
-						
-						if (inputs -1 == indents) {
-							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
-						} else {
-							Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ":").getBytes(), StandardOpenOption.APPEND);
-							folder+=subKey + ".";
-						}
+//			System.out.println(key);
+			while (!key.startsWith(folder)&&!folder.isEmpty()) {
+				folder = folder.substring(0, folder.length()-1);
+				int index = folder.lastIndexOf('.')+1;
+				if (index == -1) index = 0;
+				folder = folder.substring(0,index);
+			}
+			int indents = getInstancesOf(folder, '.'), inputs = key.split("\\.").length;
+			for (String subKey : key.split("\\.")) {
+				if (folder.contains(subKey))continue;
+				try {
+					String tab = "";
+					FileReader reader = new FileReader(file);
+					BufferedReader br = new BufferedReader(reader);
 
-						indents++;
-					} catch (IOException e) {
-						//exception handling left as an exercise for the reader
-						e.printStackTrace();
+					if (br.readLine() != null) {
+						tab = "\n";
 					}
+
+					br.close();
+
+					for (int i = 0; i < indents; i++) {
+						tab += "\t";
+					}
+
+					if (inputs -1 == indents) {
+						Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ": " + data.get(key)).getBytes(), StandardOpenOption.APPEND);
+					} else {
+						Files.write(Paths.get(file.getAbsolutePath()), (tab+subKey + ":").getBytes(), StandardOpenOption.APPEND);
+						folder+=subKey + ".";
+					}
+
+					indents++;
+				} catch (IOException e) {
+					//exception handling left as an exercise for the reader
+					e.printStackTrace();
 				}
 			}
 		}
 	}
-	
+
 	public int getInstancesOf(String str, char c) {
-	    int count = 0;
+		int count = 0;
 
-	    for(int i = 0; i < str.length(); i++) {
-	    	if(str.charAt(i) == c)
-	            count++;
-	    }
+		for(int i = 0; i < str.length(); i++) {
+			if(str.charAt(i) == c)
+				count++;
+		}
 
-	    return count;
+		return count;
 	}
-
-	private void overwrite(String key) {
+	
+	private void clear() {
 		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				String line, dataKey = "", input = "";
-				while ((line = br.readLine()) != null) {
-					if (line.contains(": ")) {
-						dataKey += line.trim().split(":")[0];
-						if (dataKey.equalsIgnoreCase(key)) {
-							line = line.replace(line.split(": ")[1], data.get(key).toString());
-						}
-						dataKey = "";
-						input += line+"\n";
-						continue;
-					}
-					dataKey += line.trim().replace(":", "") + ".";
-					input += line+"\n";
-				}
-				input = input.substring(0,input.length()-1);
-				FileOutputStream out = new FileOutputStream(file);
-				out.write(input.getBytes());
-				out.close();
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			FileOutputStream out = new FileOutputStream(file);
+			out.write("".getBytes());
+			out.close();
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -199,11 +188,12 @@ public class FileConnection {
 	}
 
 	public void set(String key, Object value) {
-		for (String otherKey : data.keySet()) {
-			if (otherKey.contains(key)) {
-				
-			}
-		}
+//		ArrayList<String> removeKeys = new ArrayList<>(data.keySet());
+//		for (String otherKey : removeKeys) {
+//			if (otherKey.contains(key)&&otherKey.length() > key.length()) {
+//				data.remove(otherKey);
+//			}
+//		}
 		data.put(key, value);
 	}
 

@@ -2,10 +2,14 @@ Aidan:
 	Testing:
 		Amari:
 			Priyam: 5000
+		Max:
+			X: 20
+			Y: 20
+			Z: 20
+		Min:
+			X: 20
 Arena:
 	Max:
 		X: 20
 		Y: 20
 		Z: 20
-	Min:
-		X: 20
