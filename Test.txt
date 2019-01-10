@@ -2,14 +2,30 @@ Aidan:
 	Testing:
 		Amari:
 			Priyam: 5000
-		Max:
-			X: 20
-			Y: 20
-			Z: 20
-		Min:
-			X: 20
 Arena:
+	Amari:
+		Consed: 24
+		Market: 10
+		Z: 20
+	Consed: 24
+	Market: 10
 	Max:
 		X: 20
 		Y: 20
 		Z: 20
+	Religious:
+		Play:
+			Rep: 129
+	Sack:
+		X: 1245
+Creative:
+	Caomplex:
+		Stamina: Hey Bean
+	Max:
+		A:
+			P: 20
+			Start: 204
+			Startint To juice:
+				P: 20
+				Rekt: true
+		P: 20

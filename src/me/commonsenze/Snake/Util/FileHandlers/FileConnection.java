@@ -38,20 +38,19 @@ public class FileConnection {
 			BufferedReader br = new BufferedReader(reader);
 			try {
 				String line, key = "";
+				int difference;
 				while ((line = br.readLine()) != null) {
+					difference = getInstancesOf(key, '.')-getInstancesOf(line, '\t');
+					for (int i = 0; i < difference; i++) {
+						key = key.substring(0,key.length()-2);
+						int index = key.lastIndexOf('.')+1;
+						if (index == -1) index = 0;
+						key = key.substring(0,index);
+					}
 					if (!line.contains(": ")) {
-						int indents = getInstancesOf(key, '.'), tabs = getInstancesOf(line, '\t');
-						if (indents != tabs) {
-							key = key.substring(0,key.length()-2);
-							int index = key.lastIndexOf('.')+1;
-							if (index == -1) index = 0;
-							key = key.substring(0,index);
-							System.out.println(key);
-						}
 						key += line.trim().replace(":", "") + ".";
 						continue;
 					}
-//					System.out.println(key+line.trim().split(": ")[0]);
 					set(key+line.trim().split(": ")[0], (Object)line.trim().split(": ")[1]);
 				}
 				br.close();
@@ -70,21 +69,30 @@ public class FileConnection {
 		FileConnection connection = new FileConnection("Test");
 //		System.out.println("Setting data values...");
 
-		connection.set("Arena.Max.X", 20);
-		connection.set("Arena.Max.Y", 20);
-		connection.set("Arena.Max.Z", 20);
-		connection.set("Aidan.Testing.Amari.Priyam", 5000);
+//		connection.set("Arena.Max.X", 20);
+//		connection.set("Arena.Max.Y", 20);
+//		connection.set("Arena.Max.Z", 20);
+//		connection.set("Arena.Amari.Z", 20);
+//		connection.set("Creative.Max.P", 20);
+//		connection.set("Creative.Max.A.Start", 204);
+//		connection.set("Arena.Sack.X", 1245);
+//		connection.set("Arena.Religious.Play.Rep", 129);
+//		connection.set("Arena.Consed", 24);
+//		connection.set("Arena.Market", 10);
+//		connection.set("Creative.Caomplex.Stamina", "Hey Bean");
+//		connection.set("Creative.Max.A.Startint To juice.Rekt", true);
+//		connection.set("Aidan.Testing.Amari.Priyam", 5000);
 
 //		System.out.println("Saving data...");
 		connection.save();
 
-//		System.out.println("Showing data...");
-//		try {
-//			System.out.println(connection.getInt("Aidan.Testing.Amari.Priyam"));
-//		} catch (IllegalKeyException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		System.out.println("Showing data...");
+		try {
+			System.out.println(connection.getObject("Creative.Max.A.Startint To juice.Rekt"));
+		} catch (IllegalKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void save() {
@@ -132,7 +140,7 @@ public class FileConnection {
 		}
 	}
 
-	public int getInstancesOf(String str, char c) {
+	private int getInstancesOf(String str, char c) {
 		int count = 0;
 
 		for(int i = 0; i < str.length(); i++) {
@@ -157,43 +165,7 @@ public class FileConnection {
 		}
 	}
 
-	public boolean contains(String key) {
-		try {
-			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
-			try {
-				String line, dataKey = "";
-				while ((line = br.readLine()) != null) {
-					if (line.contains(": ")) {
-						dataKey += line.trim().split(":")[0];
-						if (dataKey.equalsIgnoreCase(key)) {
-							br.close();
-							return true;
-						}
-						dataKey = "";
-						continue;
-					}
-					dataKey += line.trim().replace(":", "") + ".";
-				}
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return false;
-	}
-
 	public void set(String key, Object value) {
-//		ArrayList<String> removeKeys = new ArrayList<>(data.keySet());
-//		for (String otherKey : removeKeys) {
-//			if (otherKey.contains(key)&&otherKey.length() > key.length()) {
-//				data.remove(otherKey);
-//			}
-//		}
 		data.put(key, value);
 	}
 
@@ -202,7 +174,7 @@ public class FileConnection {
 		throw new IllegalKeyException();
 	}
 
-	public int getInt(String key) throws NumberFormatException, IllegalKeyException {
+	public int getInt(String key) throws IllegalKeyException {
 		if (data.containsKey(key)) {
 			int num = 0;
 			try {
@@ -215,7 +187,7 @@ public class FileConnection {
 		throw new IllegalKeyException();
 	}
 
-	public double getDouble(String key) throws NumberFormatException, IllegalKeyException {
+	public double getDouble(String key) throws IllegalKeyException {
 		if (data.containsKey(key)) {
 			double num = 0;
 			try {
